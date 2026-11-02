@@ -38,6 +38,9 @@ export function largest(base, width) {
   return `${BASE}images/${base}-${chosen}.webp`;
 }
 
+/** Largest available variant — used by the lightbox and its full-size link. */
+export const fullSize = (base) => largest(base, 1200);
+
 /**
  * Responsive <img> markup.
  * Intrinsic width/height come from the manifest so the browser reserves space
@@ -79,8 +82,12 @@ function escapeAttr(value) {
     .replace(/>/g, '&gt;');
 }
 
+let imageGuardReady = false;
+
 /** Replace broken images anywhere in the document with the branded placeholder. */
 export function guardImages() {
+  if (imageGuardReady) return;
+  imageGuardReady = true;
   const swap = (image) => {
     if (image.dataset.failed) return;
     image.dataset.failed = 'true';
@@ -95,7 +102,7 @@ export function guardImages() {
     },
     true
   );
-  document.querySelectorAll('img').forEach((image) => {
-    if (image.complete && image.naturalWidth === 0) swap(image);
-  });
+  // Images that fail after this point are caught by the capture-phase listener
+  // above. We intentionally do not pre-scan `complete` images: a not-yet-loaded
+  // or src-less image would otherwise be replaced with a false positive.
 }

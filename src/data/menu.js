@@ -405,13 +405,25 @@ export const dishes = [
   },
 ].map((dish) => ({
   ...dish,
+  /** `slug` is the canonical URL identifier for /menu/[slug]. */
+  slug: dish.id,
   options: options[dish.category] ?? [],
 }));
 
-export const dishById = (id) => dishes.find((dish) => dish.id === id);
+/** Canonical lookup for a /menu/[slug] URL. */
+export const dishBySlug = (slug) => dishes.find((dish) => dish.slug === slug);
+/** Legacy lookup kept for old ?id= bookmarks. */
+export const dishById = (id) => dishBySlug(id);
 export const dishesByCategory = (categoryId) => dishes.filter((dish) => dish.category === categoryId);
 export const categoryById = (categoryId) => categories.find((category) => category.id === categoryId);
 export const dietLabel = (diet) => (diet === 'veg' ? 'Vegetarian' : 'Non-vegetarian');
+
+/** One string used by the menu search, so results are consistent everywhere. */
+export const searchText = (dish) =>
+  [dish.name, dish.description, dish.story, categoryById(dish.category)?.name, ...(dish.tags ?? []), ...(dish.ingredients ?? [])]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
 
 /** Curated homepage lists. */
 export const featuredIds = [
