@@ -1,0 +1,110 @@
+{
+  "burger-chicken": {
+    "width": 1200,
+    "height": 670,
+    "sourceWidth": 1376,
+    "sourceHeight": 768,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#b7a073"
+  },
+  "burger-loaded-signature": {
+    "width": 1200,
+    "height": 670,
+    "sourceWidth": 1376,
+    "sourceHeight": 768,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#69553a"
+  },
+  "burger-veg-tikki": {
+    "width": 1200,
+    "height": 670,
+    "sourceWidth": 1376,
+    "sourceHeight": 768,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#967752"
+  },
+  "cafe-interior": {
+    "width": 1200,
+    "height": 655,
+    "sourceWidth": 1408,
+    "sourceHeight": 768,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#644722"
+  },
+  "hero-spread": {
+    "width": 1200,
+    "height": 670,
+    "sourceWidth": 1376,
+    "sourceHeight": 768,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#442f1a"
+  },
+  "pasta-alfredo": {
+    "width": 1200,
+    "height": 670,
+    "sourceWidth": 1376,
+    "sourceHeight": 768,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#5c4e38"
+  },
+  "pizza-farmhouse": {
+    "width": 1200,
+    "height": 670,
+    "sourceWidth": 1376,
+    "sourceHeight": 768,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#93775c"
+  },
+  "pizza-margherita": {
+    "width": 1200,
+    "height": 670,
+    "sourceWidth": 1376,
+    "sourceHeight": 768,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#3c3220"
+  },
+  "pizza-paneer-tikka": {
+    "width": 1200,
+    "height": 670,
+    "sourceWidth": 1376,
+    "sourceHeight": 768,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#47391c"
+  }
+}
