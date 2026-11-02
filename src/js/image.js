@@ -1,7 +1,10 @@
-import manifest from '../data/images.json';
+// Import the manifest as a JavaScript module, never as .json: browsers reject
+// an application/json response for an ES module ("strict MIME type checking"),
+// which aborts the entire module graph on a plain static server.
+import manifest from '../data/images.js';
 
-/** Respect Vite's base so assets work from any deployment folder. */
-const BASE = import.meta.env.BASE_URL;
+/** Respect Vite's base; fall back to '/' when the source is served without Vite. */
+const BASE = (import.meta.env && import.meta.env.BASE_URL) || '/';
 
 /** Branded inline placeholder used if a photograph fails to load. */
 export const PLACEHOLDER =
