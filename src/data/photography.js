@@ -4,7 +4,8 @@
  * ⚠️ ILLUSTRATIVE IMAGERY
  * None of these photographs were taken at The Mango Tree Cafe. They are
  * illustrative food and ambience photography used until the cafe provides its
- * own. The gallery and footer say so explicitly — please keep that disclosure.
+ * own. Captions, alt text, the gallery, dish pages and footer all say so
+ * explicitly — please keep that disclosure.
  */
 
 export const heroPhoto = {
@@ -27,50 +28,57 @@ export const aboutPhotos = [
   },
 ];
 
+/** Every photograph shown on the gallery page (and in its lightbox). */
 export const galleryPhotos = [
   {
     base: 'cafe-interior',
-    alt: 'Cafe interior with green velvet banquettes and warm pendant lights',
-    caption: 'The dining room',
+    alt: 'Illustrative cafe interior with green velvet banquettes and warm pendant lights',
+    caption: 'Illustrative · dining room',
     span: 'wide',
   },
   {
     base: 'pizza-margherita',
-    alt: 'Wood-fired margherita pizza with basil on a slate board',
-    caption: 'Straight from the oven',
+    alt: 'Illustrative margherita pizza with basil on a slate board',
+    caption: 'Illustrative · pizza',
   },
   {
     base: 'cake-chocolate-truffle',
-    alt: 'Slice of chocolate truffle cake with glossy ganache',
-    caption: 'Something sweet',
+    alt: 'Illustrative slice of chocolate truffle cake with glossy ganache',
+    caption: 'Illustrative · dessert',
     span: 'tall',
   },
   {
     base: 'cafe-table-food',
-    alt: 'Food served on a cafe table with cutlery and drinks',
-    caption: 'Served to the table',
+    alt: 'Illustrative food served on a cafe table with cutlery and drinks',
+    caption: 'Illustrative · table setting',
   },
   {
     base: 'cafe-seating',
-    alt: 'Green velvet banquette seating beside a sunlit window with plants',
-    caption: 'A corner to settle in',
+    alt: 'Illustrative green velvet banquette seating beside a sunlit window with plants',
+    caption: 'Illustrative · seating',
   },
   {
     base: 'burger-loaded-signature',
-    alt: 'Loaded double-patty burger with melting cheese on a dark plate',
-    caption: 'Big bites',
+    alt: 'Illustrative loaded double-patty burger with melting cheese on a dark plate',
+    caption: 'Illustrative · burger',
   },
   {
     base: 'coffee-cold',
-    alt: 'Cold coffee in a tall glass topped with chocolate',
-    caption: 'Cold coffee days',
+    alt: 'Illustrative cold coffee in a tall glass topped with chocolate',
+    caption: 'Illustrative · cold coffee',
   },
   {
     base: 'shake-oreo',
-    alt: 'Oreo milkshake in a tall glass topped with whipped cream and cookie crumbs',
-    caption: 'Thick shakes',
+    alt: 'Illustrative cookie milkshake in a tall glass topped with whipped cream',
+    caption: 'Illustrative · thick shake',
   },
 ];
+
+/** Short teaser grid on the homepage — links through to /gallery. */
+export const homeGalleryPhotos = galleryPhotos.slice(0, 4);
+
+/** Photos used by a lightbox group. */
+export const lightboxGroup = (group) => (group === 'home' ? homeGalleryPhotos : galleryPhotos);
 
 export const ambiencePhoto = {
   base: 'cafe-table-food',

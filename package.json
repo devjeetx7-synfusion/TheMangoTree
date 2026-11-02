@@ -1,19 +1,21 @@
 {
   "name": "the-mango-tree-cafe",
   "private": true,
-  "version": "2.0.0",
-  "description": "The Mango Tree Cafe \u2014 cinematic cafe website with an illustrated sample menu, built with Vite.",
+  "version": "3.0.0",
+  "description": "The Mango Tree Cafe — a routed, mobile-first cafe website with a central sample menu, gallery lightbox and WhatsApp ordering, built with Vite.",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "node scripts/verify-assets.mjs && vite build",
+    "build": "node scripts/verify-assets.mjs && vite build && node scripts/postbuild.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "images": "node scripts/optimize-images.mjs",
     "verify": "node scripts/verify-assets.mjs",
     "test": "node --test",
-    "check": "npm test && npm run verify"
+    "test:browser": "node scripts/browser-audit.mjs",
+    "check": "npm test && npm run verify && npm run build"
   },
   "devDependencies": {
+    "esbuild": "^0.28.0",
     "jsdom": "^25.0.1",
     "sharp": "^0.34.4",
     "vite": "^7.3.7"

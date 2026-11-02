@@ -8,7 +8,7 @@
 import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { dishes, categories } from '../src/data/menu.js';
-import { galleryPhotos, aboutPhotos, heroPhoto } from '../src/data/photography.js';
+import { galleryPhotos, homeGalleryPhotos, aboutPhotos, heroPhoto } from '../src/data/photography.js';
 
 const ROOT = process.cwd();
 const IMAGE_DIR = path.join(ROOT, 'public', 'images');
@@ -42,8 +42,9 @@ const register = (base, where) => {
 };
 
 register(heroPhoto.base, 'homepage hero');
-aboutPhotos.forEach((photo) => register(photo.base, 'homepage about collage'));
-galleryPhotos.forEach((photo) => register(photo.base, 'homepage gallery'));
+aboutPhotos.forEach((photo) => register(photo.base, 'story collage'));
+galleryPhotos.forEach((photo) => register(photo.base, 'gallery / lightbox'));
+homeGalleryPhotos.forEach((photo) => register(photo.base, 'homepage gallery teaser'));
 dishes.forEach((dish) => register(dish.image, `dish "${dish.name}"`));
 categories.forEach((category) => register(category.image, `category "${category.name}"`));
 
@@ -84,6 +85,24 @@ for (const [base, where] of required.entries()) {
 
 for (const [base, names] of seenImages.entries()) {
   if (names.length > 1) problems.push(`The same photograph (${base}) is used for several dishes: ${names.join(', ')}.`);
+}
+
+// Data-integrity checks for the routed site.
+const slugs = new Set();
+for (const dish of dishes) {
+  if (!dish.slug || !/^[a-z0-9-]+$/.test(dish.slug)) problems.push(`Dish "${dish.name}" has no URL-safe slug.`);
+  if (slugs.has(dish.slug)) problems.push(`Duplicate dish slug: ${dish.slug}.`);
+  slugs.add(dish.slug);
+}
+for (const photo of [...galleryPhotos, ...aboutPhotos, heroPhoto]) {
+  if (!photo.alt?.trim()) problems.push(`Photograph ${photo.base} is missing alt text.`);
+}
+for (const photo of galleryPhotos) {
+  if (!photo.caption?.trim()) problems.push(`Gallery photograph ${photo.base} is missing a caption.`);
+  if (!/illustrative/i.test(photo.caption)) warnings.push(`Gallery caption for ${photo.base} should disclose that the photo is illustrative.`);
+}
+for (const photo of homeGalleryPhotos) {
+  if (!galleryPhotos.includes(photo)) problems.push('Homepage gallery teaser contains a photo not present on the gallery page.');
 }
 
 for (const [base] of Object.entries(manifest)) {
