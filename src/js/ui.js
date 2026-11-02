@@ -468,6 +468,9 @@ let revealObserver = null;
 function reveal(root) {
   const items = Array.from(root.querySelectorAll('.reveal'));
   if (!items.length) return;
+  // Content is visible by default in CSS. Motion only hides an item while
+  // an observer is actively handling it, so a JS/observer failure can never
+  // leave the page looking empty.
   if (reduceMotion() || !('IntersectionObserver' in window)) {
     items.forEach((item) => item.classList.add('is-visible'));
     return;
@@ -477,13 +480,29 @@ function reveal(root) {
     (entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
+        entry.target.classList.remove('is-pending');
         entry.target.classList.add('is-visible');
         revealObserver.unobserve(entry.target);
       });
     },
     { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
   );
-  items.forEach((item) => revealObserver.observe(item));
+  items.forEach((item) => {
+    item.classList.add('is-pending');
+    revealObserver.observe(item);
+  });
+
+  // If a browser pauses or fails to deliver IntersectionObserver callbacks,
+  // reveal any remaining content shortly instead of leaving it invisible.
+  window.setTimeout(() => {
+    items.forEach((item) => {
+      if (!item.classList.contains('is-visible')) {
+        item.classList.remove('is-pending');
+        item.classList.add('is-visible');
+        revealObserver?.unobserve(item);
+      }
+    });
+  }, 1800);
 }
 
 /* -------------------------------------------------------------- public API */
