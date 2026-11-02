@@ -7,7 +7,14 @@
  * If the site is deployed under a sub-folder, set `base` in vite.config.mjs
  * and every link gets the same prefix automatically.
  */
-const rawBase = import.meta.env.BASE_URL || '/';
+/**
+ * Vite injects `import.meta.env` when it transforms this module. A plain static
+ * server (e.g. `python -m http.server 8080`) has no such object, so guard it
+ * and fall back to the site root — otherwise the whole module graph throws
+ * `TypeError: Cannot read properties of undefined (reading 'BASE_URL')` before
+ * app.js can mount the router.
+ */
+const rawBase = (import.meta.env && import.meta.env.BASE_URL) || '/';
 export const BASE = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
 
 /** Absolute, base-aware path for a route without a leading slash. */

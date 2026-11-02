@@ -30,9 +30,10 @@ Legacy bookmarks (`/index.html`, `/menu.html?…`, `/dish.html?id=…`) redirect
 
 ```bash
 npm install          # Vite, esbuild, sharp, jsdom (dev only)
-npm run dev          # http://localhost:5173
+npm run dev          # http://localhost:5173 (Vite dev server — recommended)
 npm run build        # verify assets → bundle to /dist → write dist/404.html
 npm run preview      # serve the production build at :4173
+npm run serve        # dependency-free static server for raw source at :8080
 npm test             # route/link/image, interaction, WhatsApp, responsive and build tests
 npm run verify       # image + menu-data integrity check
 npm run check        # test + verify + build
@@ -41,6 +42,36 @@ npm run test:browser # optional real-Chromium audit (see Testing)
 ```
 
 Node 20+ is recommended (developed on Node 22).
+
+### Which server should be running? (the `:8080` trap)
+
+Vite is configured for **5173** (`dev`) and **4173** (`preview`). There is no Vite
+config for 8080. If you see the site at `http://localhost:8080/index.html`, a
+generic static file server (for example `python -m http.server 8080`) is serving
+the repository root — not Vite and not `dist/`. That used to produce a page with
+only the header, the illustrative-photography disclaimer, the footer and the
+bottom action bar: `<main id="main">` is filled by JavaScript, and the module
+graph aborted before `app.js` could mount the router.
+
+Two things were wrong and are now fixed in code:
+
+1. `src/js/image.js` imported `../data/images.json` directly. Browsers enforce
+   strict MIME checking on ES modules, so an `application/json` response aborts
+   the entire graph. The manifest is now a generated JS module
+   (`src/data/images.js`), kept in sync with `images.json` by `npm run images`
+   and checked by `npm run verify`.
+2. `src/js/links.js` and `src/js/image.js` read `import.meta.env.BASE_URL`
+   unguarded. That object only exists after Vite transforms the module; in native
+   ESM it throws and prevents `initRouter()` / `renderCurrent()` from running.
+   Both now fall back to `/`.
+
+A plain static server aimed at the repo root also 404s `/images/*`,
+`/favicon.svg` and `/robots.txt` (they live in `public/`) and 404s clean routes
+on refresh. `npm run serve` is a tiny dependency-free server that fixes both:
+it exposes `public/` at the site root and falls back to `index.html` for SPA
+routes. Run it instead of `python -m http.server` if you want to serve the raw
+source on 8080. The canonical options remain `npm run dev` (5173) or
+`npm run build && npm run preview` (4173, serving `dist/`).
 
 ---
 
@@ -136,6 +167,7 @@ npm test
 * `tests/interactions.test.mjs` — filters/search, card navigation, Back/Forward, dish options/quantity/notes, WhatsApp messages (configured + fallback), cart subtotals, lightbox next/prev/Escape/close, mobile nav, dropdown, signature carousel, contact links.
 * `tests/responsive.test.mjs` — CSS breakpoint coverage, flexible grids and touch-target rules for the requested viewports.
 * `tests/build.test.mjs` — production build, bundled assets, `404.html` and `_redirects` fallbacks.
+* `tests/native-esm.test.mjs` — regression guard: `links.js` / `image.js` must load in plain native ESM (no Vite transform), no browser module may import `.json`, and the generated JS manifest must match `images.json`.
 
 The DOM tests bundle the real application entry with esbuild and run it in jsdom; they exercise the same markup and handlers as the browser.
 
@@ -147,7 +179,9 @@ npm run build && npm run preview
 AWS_EXECUTION_ENV=AWS_Lambda_nodejs22.x npm run test:browser
 ```
 
-`scripts/browser-audit.mjs` loads **every route at 320 / 360 / 390 / 430 / 768 / 1024 / 1440 px** in headless Chromium and checks HTTP status, `h1`, empty links, unresolved internal links, real pixel data for every `<img>`, console/page errors, horizontal scrolling, the lightbox, menu filters, mobile navigation, WhatsApp deep links and the 404 page. It also writes screenshots to `.arena/shots` (excluded from Git). The last run: **93 page loads, 7 viewports, 3,843 internal links, 504 images, 9 interaction checks — 0 problems**. This audit caught and fixed a real `/menu` redirect loop and a mobile horizontal-overflow bug that jsdom could not see.
+`scripts/browser-audit.mjs` loads **every route at 320 / 360 / 390 / 430 / 768 / 1024 / 1440 px** in headless Chromium and checks HTTP status, `h1`, empty links, unresolved internal links, real pixel data for every `<img>`, console/page errors, horizontal scrolling, the lightbox, menu filters, mobile navigation, WhatsApp deep links and the 404 page. It also writes screenshots to `.arena/shots` (excluded from Git). Point it at any server with `AUDIT_URL`, e.g. `AUDIT_URL=http://localhost:8080 npm run test:browser` to verify the raw-source server.
+
+The last runs: **93 page loads, 7 viewports, 3,843 internal links, 504 images, 9 interaction checks — 0 problems** on the production preview, and the same audit on the `:8080` raw-source server after the fix. This audit caught and fixed a real `/menu` redirect loop, a mobile horizontal-overflow bug and the empty-homepage module-graph failure that jsdom could not see.
 
 ---
 

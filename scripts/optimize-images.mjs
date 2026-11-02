@@ -2,8 +2,9 @@
  * Build the web image set from the source photography in /assets-src.
  *
  *  - Writes responsive WebP variants (480 / 768 / 1200 px wide, never upscaled)
- *  - Records intrinsic dimensions + average colour in src/data/images.json so the
- *    UI can reserve space (no layout shift) and paint a matching placeholder
+ *  - Records intrinsic dimensions + average colour in src/data/images.json (and
+ *    its browser-importable twin src/data/images.js) so the UI can reserve
+ *    space (no layout shift) and paint a matching placeholder
  *  - Creates an Open Graph cover image
  *
  * Run with: npm run images
@@ -16,6 +17,7 @@ const ROOT = process.cwd();
 const SRC_DIR = path.join(ROOT, 'assets-src');
 const OUT_DIR = path.join(ROOT, 'public', 'images');
 const MANIFEST = path.join(ROOT, 'src', 'data', 'images.json');
+const MANIFEST_MODULE = path.join(ROOT, 'src', 'data', 'images.js');
 const WIDTHS = [480, 768, 1200];
 const SOURCE_EXT = /\.(jpe?g|png|webp)$/i;
 
@@ -75,7 +77,14 @@ async function main() {
     console.log(`✓ ${base.padEnd(30)} ${variants.join(', ')}px`);
   }
 
-  await writeFile(MANIFEST, `${JSON.stringify(manifest, null, 2)}\n`);
+  const serialised = JSON.stringify(manifest, null, 2);
+  await writeFile(MANIFEST, `${serialised}\n`);
+  // The browser imports a JS module (a .json file cannot be an ES module). Keep
+  // both outputs generated from the same object so they can never drift.
+  await writeFile(
+    MANIFEST_MODULE,
+    `/**\n * Responsive image manifest — JavaScript module form.\n *\n * Generated from src/data/images.json by \`npm run images\`. A JS module is used\n * (instead of importing the .json file directly) because browsers enforce strict\n * MIME checking on ES modules: a .json response aborts the whole module graph.\n * Keep this file in sync by running \`npm run images\`; scripts/verify-assets.mjs\n * checks it on every build.\n */\nexport default ${serialised};\n`
+  );
 
   // Social share cover (JPEG: universally supported by link previews).
   const heroSource = path.join(SRC_DIR, 'hero-spread.jpg');

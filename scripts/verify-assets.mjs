@@ -6,9 +6,11 @@
  * into /public/images. Run with `--warn` to report without failing the build.
  */
 import { readFile, stat } from 'node:fs/promises';
+import { deepStrictEqual } from 'node:assert/strict';
 import path from 'node:path';
 import { dishes, categories } from '../src/data/menu.js';
 import { galleryPhotos, homeGalleryPhotos, aboutPhotos, heroPhoto } from '../src/data/photography.js';
+import imageManifest from '../src/data/images.js';
 
 const ROOT = process.cwd();
 const IMAGE_DIR = path.join(ROOT, 'public', 'images');
@@ -31,6 +33,14 @@ try {
   manifest = JSON.parse(await readFile(path.join(ROOT, 'src', 'data', 'images.json'), 'utf8'));
 } catch {
   problems.push('src/data/images.json is missing — run `npm run images`.');
+}
+
+// The browser imports images.js, while the tooling reads images.json. Both must
+// describe the same photographs or `srcset()` would point at wrong variants.
+try {
+  deepStrictEqual(imageManifest, manifest);
+} catch {
+  problems.push('src/data/images.js is out of sync with src/data/images.json — run `npm run images`.');
 }
 
 const required = new Map(); // base -> list of "where" labels

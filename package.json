@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
+    "serve": "node scripts/serve.mjs",
     "build": "node scripts/verify-assets.mjs && vite build && node scripts/postbuild.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "images": "node scripts/optimize-images.mjs",
