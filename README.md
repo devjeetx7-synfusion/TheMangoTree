@@ -99,7 +99,9 @@ To add or replace a photo: drop a `.jpg`/`.png`/`.webp` into `assets-src/` using
 ### Licensing / provenance
 The photographs in this repository were produced specifically for this design preview and are committed with it, so there are no third-party hotlinks, expiring URLs or attribution requirements. **They are illustrative, not photographs of the real cafe.** Before launch, replace them with the cafe's own photography (preferred) or properly licensed stock images, and update the captions/disclosures accordingly. Do not present illustrative photography as the venue's own.
 
-A few images in the current set are still being produced (see “Known limitations”). `npm run build` deliberately refuses to build while a referenced photo is missing, so a missing image can never ship unnoticed.
+The build deliberately refuses to complete while a referenced photo is missing or when two dishes share one photograph, so an empty image slot can never ship unnoticed.
+
+The current set is 19 photographs: 15 dish photographs (one per menu item), a hero spread, and three cafe ambience images used in the story block and gallery.
 
 ---
 
@@ -145,7 +147,6 @@ npm test
 
 ## Known limitations
 
-* Ten photographs from the planned set (momos, sandwich, fries, cake, noodles, cappuccino, cold coffee, Oreo shake, two cafe ambience shots) were still being generated when this version was saved — the image generator is capped per turn. Until they are added, those cards fall back to the branded “photograph coming soon” artwork and `npm run build` will stop. Add the files to `assets-src/` and run `npm run images`.
 * The cafe's real WhatsApp number, phone, address, opening hours and social links have not been supplied, so those fields show "to be confirmed" and WhatsApp ordering uses the clipboard fallback.
 * Google Maps directions point to the Chhapra locality, not a verified street address.
 * Prices, ingredients and allergens are sample data and must be confirmed with the cafe.

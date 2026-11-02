@@ -47,6 +47,78 @@
     ],
     "colour": "#644722"
   },
+  "cafe-seating": {
+    "width": 1200,
+    "height": 896,
+    "sourceWidth": 1200,
+    "sourceHeight": 896,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#796b4e"
+  },
+  "cafe-table-food": {
+    "width": 1200,
+    "height": 896,
+    "sourceWidth": 1200,
+    "sourceHeight": 896,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#6b5c43"
+  },
+  "cake-chocolate-truffle": {
+    "width": 1200,
+    "height": 896,
+    "sourceWidth": 1200,
+    "sourceHeight": 896,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#5e5649"
+  },
+  "coffee-cappuccino": {
+    "width": 1200,
+    "height": 896,
+    "sourceWidth": 1200,
+    "sourceHeight": 896,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#716b5c"
+  },
+  "coffee-cold": {
+    "width": 1200,
+    "height": 896,
+    "sourceWidth": 1200,
+    "sourceHeight": 896,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#4d4737"
+  },
+  "fries-salted": {
+    "width": 1200,
+    "height": 896,
+    "sourceWidth": 1200,
+    "sourceHeight": 896,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#523d25"
+  },
   "hero-spread": {
     "width": 1200,
     "height": 670,
@@ -58,6 +130,30 @@
       1200
     ],
     "colour": "#442f1a"
+  },
+  "momos-steamed": {
+    "width": 1200,
+    "height": 896,
+    "sourceWidth": 1200,
+    "sourceHeight": 896,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#957a5b"
+  },
+  "noodles-hakka": {
+    "width": 1200,
+    "height": 896,
+    "sourceWidth": 1200,
+    "sourceHeight": 896,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#544631"
   },
   "pasta-alfredo": {
     "width": 1200,
@@ -106,5 +202,29 @@
       1200
     ],
     "colour": "#47391c"
+  },
+  "sandwich-club": {
+    "width": 1200,
+    "height": 896,
+    "sourceWidth": 1200,
+    "sourceHeight": 896,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#977d5d"
+  },
+  "shake-oreo": {
+    "width": 1200,
+    "height": 896,
+    "sourceWidth": 1200,
+    "sourceHeight": 896,
+    "variants": [
+      480,
+      768,
+      1200
+    ],
+    "colour": "#908069"
   }
 }

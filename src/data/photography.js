@@ -51,6 +51,11 @@ export const galleryPhotos = [
     caption: 'Served to the table',
   },
   {
+    base: 'cafe-seating',
+    alt: 'Green velvet banquette seating beside a sunlit window with plants',
+    caption: 'A corner to settle in',
+  },
+  {
     base: 'burger-loaded-signature',
     alt: 'Loaded double-patty burger with melting cheese on a dark plate',
     caption: 'Big bites',
@@ -59,6 +64,11 @@ export const galleryPhotos = [
     base: 'coffee-cold',
     alt: 'Cold coffee in a tall glass topped with chocolate',
     caption: 'Cold coffee days',
+  },
+  {
+    base: 'shake-oreo',
+    alt: 'Oreo milkshake in a tall glass topped with whipped cream and cookie crumbs',
+    caption: 'Thick shakes',
   },
 ];
 
