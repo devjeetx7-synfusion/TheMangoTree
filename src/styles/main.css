@@ -3526,3 +3526,128 @@ h2 em {
   .gallery-tile img,
   .about-collage figure:hover img { transition: none; }
 }
+
+
+/* -------------------------------------------------------------------------
+   Mobile visual hardening (Nov 2026)
+   Keep content visible by default; reveal animation is an enhancement, never
+   a dependency for reading the page. These rules also protect narrow devices.
+   ------------------------------------------------------------------------- */
+.reveal {
+  opacity: 1;
+  transform: none;
+}
+
+.reveal.is-pending {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+.reveal.is-pending.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+img {
+  max-inline-size: 100%;
+}
+
+.hero__copy,
+.hero__media,
+.section-head > *,
+.category-card,
+.dish-card,
+.gallery-tile,
+.about-copy,
+.footer-col,
+.footer-brand {
+  min-width: 0;
+}
+
+@media (max-width: 420px) {
+  .hero__actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero__actions .btn {
+    width: 100%;
+    white-space: normal;
+    line-height: 1.25;
+  }
+
+  .hero-frame {
+    margin-inline: 0;
+  }
+
+  .hero-card {
+    right: 6px;
+    width: clamp(72px, 23vw, 92px);
+  }
+
+  .hero-stamp {
+    left: 6px;
+  }
+
+  .footer-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .footer-brand,
+  .footer-col--contact {
+    grid-column: auto;
+  }
+
+  .footer-bottom {
+    align-items: flex-start;
+    flex-direction: column;
+    overflow-wrap: anywhere;
+  }
+
+  .mobile-bar {
+    gap: 8px;
+    padding-inline: max(10px, env(safe-area-inset-left)) max(10px, env(safe-area-inset-right));
+  }
+
+  .mobile-bar .btn {
+    min-width: 0;
+    padding-inline: 10px;
+    white-space: normal;
+    line-height: 1.2;
+  }
+}
+
+@media (max-width: 340px) {
+  .header-inner {
+    gap: 8px;
+  }
+
+  .brand {
+    gap: 7px;
+  }
+
+  .brand__name {
+    font-size: 0.86rem;
+  }
+
+  .brand__mark {
+    width: 30px;
+    height: 30px;
+  }
+
+  .header-actions {
+    gap: 6px;
+  }
+
+  .nav-toggle {
+    width: 40px;
+    height: 40px;
+  }
+
+  .hero h1 {
+    overflow-wrap: anywhere;
+  }
+
+  .mobile-bar .btn {
+    font-size: 0.72rem;
+  }
+}
