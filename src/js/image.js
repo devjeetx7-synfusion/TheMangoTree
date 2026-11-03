@@ -30,7 +30,7 @@ export const imageInfo = (base) => manifest[base];
 export function srcset(base) {
   const info = manifest[base];
   if (!info) return '';
-  return info.variants.map((width) => `${BASE}images/${base}-${width}.webp ${width}w`).join(', ');
+  return info.variants.map((width) => `${BASE}images/${base}-${width}.png ${width}w`).join(', ');
 }
 
 export function largest(base, width) {
@@ -38,7 +38,7 @@ export function largest(base, width) {
   if (!info) return '';
   const available = info.variants;
   const chosen = available.find((w) => w >= width) ?? available[available.length - 1];
-  return `${BASE}images/${base}-${chosen}.webp`;
+  return `${BASE}images/${base}-${chosen}.png`;
 }
 
 /** Largest available variant — used by the lightbox and its full-size link. */
