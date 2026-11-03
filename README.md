@@ -1,6 +1,6 @@
 # The Mango Tree Cafe — website
 
-A mobile-first, clean-route cafe website for **The Mango Tree Cafe**, Chhapra, Bihar — built with Vite, vanilla JavaScript and a locally hosted, responsive WebP image set.
+A mobile-first, clean-route cafe website for **The Mango Tree Cafe**, Chhapra, Bihar — built with Vite, vanilla JavaScript and a locally hosted, responsive PNG image set.
 
 > **Illustrative imagery & sample menu**
 > Every photograph is illustrative food/ambience photography, **not** a photograph of the real cafe. Dish names, descriptions, ingredients, allergens and prices are editable **sample data**. Disclosures are shown on the gallery, dish, contact, legal and footer pages — please keep them until real content is supplied. Nothing on this site claims an order has been placed or confirmed.
