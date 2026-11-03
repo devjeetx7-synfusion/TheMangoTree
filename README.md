@@ -150,7 +150,7 @@ src/data/images.json  generated manifest: intrinsic size, variants, average colo
 scripts/optimize-images.mjs
 ```
 
-`npm run images` generates the responsive WebP set and manifest. The UI uses the manifest to set `width`/`height`, paint an average-colour placeholder, and build `srcset`/`sizes` so images are never stretched (`object-fit: cover`) and phones download the right variant. A capture-phase error handler swaps any failed photograph for a branded SVG fallback.
+`npm run images` generates the responsive PNG set and manifest. The UI uses the manifest to set `width`/`height`, paint an average-colour placeholder, and build `srcset`/`sizes` so images are never stretched (`object-fit: cover`) and phones download the right variant. A capture-phase error handler swaps any failed photograph for a branded SVG fallback.
 
 Gallery tiles and the dish hero are real `<button>` elements wired to a lightbox (`src/js/ui.js`) that supports next / previous / close, Escape, ← / →, a full-size image link and focus management. Decorative story/hero images are deliberately **not** interactive.
 
