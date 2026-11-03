@@ -61,7 +61,7 @@ npm run serve        # dependency-free static server for raw source at :8080
 npm test             # route/link/image, interaction, WhatsApp, responsive and build tests
 npm run verify       # image + menu-data integrity check
 npm run check        # test + verify + build
-npm run images       # rebuild responsive WebP assets from /assets-src
+npm run images       # rebuild responsive PNG assets from /assets-src
 npm run test:browser # optional real-Chromium audit (see Testing)
 ```
 
