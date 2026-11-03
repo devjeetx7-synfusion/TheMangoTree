@@ -70,7 +70,7 @@ for (const dish of dishes) {
 for (const [base, where] of required.entries()) {
   if (base === 'og-cover') {
     const size = await fileSize(path.join(IMAGE_DIR, 'og-cover.png'));
-    if (size === null) problems.push('Missing public/images/og-cover.jpg (social share image).');
+    if (size === null) problems.push('Missing public/images/og-cover.png (social share image).');
     continue;
   }
   const entry = manifest[base];
