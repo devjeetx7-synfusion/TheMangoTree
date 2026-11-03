@@ -14,7 +14,7 @@ import imageManifest from '../src/data/images.js';
 
 const ROOT = process.cwd();
 const IMAGE_DIR = path.join(ROOT, 'public', 'images');
-const MAX_BYTES = 400 * 1024; // no single web image should exceed 400 KB
+const MAX_BYTES = 2 * 1024 * 1024; // warn on unusually large PNG assets
 
 const warnOnly = process.argv.includes('--warn');
 const problems = [];
@@ -59,7 +59,7 @@ dishes.forEach((dish) => register(dish.image, `dish "${dish.name}"`));
 categories.forEach((category) => register(category.image, `category "${category.name}"`));
 
 // The homepage hero markup hard-codes these two filenames as well.
-register('og-cover', 'social share cover (JPEG, not WebP)');
+register('og-cover', 'social share cover (PNG)');
 
 const seenImages = new Map();
 for (const dish of dishes) {
@@ -69,7 +69,7 @@ for (const dish of dishes) {
 
 for (const [base, where] of required.entries()) {
   if (base === 'og-cover') {
-    const size = await fileSize(path.join(IMAGE_DIR, 'og-cover.jpg'));
+    const size = await fileSize(path.join(IMAGE_DIR, 'og-cover.png'));
     if (size === null) problems.push('Missing public/images/og-cover.jpg (social share image).');
     continue;
   }
@@ -79,14 +79,14 @@ for (const [base, where] of required.entries()) {
     continue;
   }
   for (const width of entry.variants ?? []) {
-    const file = path.join(IMAGE_DIR, `${base}-${width}.webp`);
+    const file = path.join(IMAGE_DIR, `${base}-${width}.png`);
     const size = await fileSize(file);
     if (size === null) {
       problems.push(`Missing generated file ${path.relative(ROOT, file)}.`);
       continue;
     }
     if (size > MAX_BYTES) {
-      warnings.push(`${path.relative(ROOT, file)} is ${Math.round(size / 1024)} KB (over 400 KB).`);
+      warnings.push(`${path.relative(ROOT, file)} is ${Math.round(size / 1024)} KB (over 2 MB).`);
     }
   }
   if (!entry.variants?.length) problems.push(`${base} has no generated variants.`);
