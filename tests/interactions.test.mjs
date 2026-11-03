@@ -244,7 +244,7 @@ test('signature carousel changes dish, detail link and order target together', a
 });
 
 test('related dishes and every rendered button have a real destination or handler', async () => {
-  const known = '[data-wa-enquiry], [data-wa-contact], [data-order-card], [data-order-signature], [data-order-current], [data-add-current], [data-add-to-cart], [data-cart-toggle], [data-cart-close], [data-cart-clear], [data-cart-order], [data-cart-step], [data-cart-remove], [data-chip], [data-reset], [data-dot], [data-sig-prev], [data-sig-next], [data-qty-minus], [data-qty-plus], [data-menu-dropdown-toggle], [data-lightbox-index], [data-lightbox-dish], [data-lightbox-close], [data-lightbox-prev], [data-lightbox-next], .nav-toggle';
+  const known = '[data-wa-enquiry], [data-wa-contact], [data-order-card], [data-order-signature], [data-order-current], [data-add-current], [data-add-to-cart], [data-cart-toggle], [data-cart-close], [data-cart-clear], [data-cart-order], [data-cart-step], [data-cart-remove], [data-chip], [data-reset], [data-dot], [data-sig-prev], [data-sig-next], [data-qty-minus], [data-qty-plus], [data-menu-dropdown-toggle], [data-lightbox-index], [data-lightbox-dish], [data-lightbox-close], [data-lightbox-prev], [data-lightbox-next], [data-cat-tab], [data-search-clear], .nav-toggle';
   for (const url of ['/', '/menu', `/menu/${dishes[0].slug}`, '/gallery', '/about', '/contact', '/privacy', '/terms']) {
     const { window, document } = await createApp(url);
     const unhandled = Array.from(document.querySelectorAll('button')).filter((button) => !button.matches(known));

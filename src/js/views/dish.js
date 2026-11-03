@@ -2,15 +2,17 @@
 import { dishBySlug, dishesByCategory, dishes, categoryById, formatPrice, dietLabel } from '../../data/menu.js';
 import { site } from '../../data/site.js';
 import { img } from '../image.js';
-import { ROUTES, menuHref, dishHref } from '../links.js';
+import { ROUTES, menuHref } from '../links.js';
 import { icon } from '../icons.js';
 import { dietBadge, dishCard, breadcrumb } from '../components.js';
 import { escapeHtml, clampInt } from '../utils.js';
-import { unitPrice, orderItem, orderNow, buildOrderMessage, combineOrderLines } from '../whatsapp.js';
+import { orderItem, orderNow, buildOrderMessage, combineOrderLines } from '../whatsapp.js';
+import { unitPrice } from '../whatsapp.js';
 import { cart } from '../cart.js';
 import { toast } from '../notify.js';
 
 const MAX_QTY = 20;
+const RELATED_SIZES = '(max-width: 720px) 120px, (max-width: 1080px) 46vw, 360px';
 
 export const meta = (route) => {
   const dish = dishBySlug(route.params.slug);
@@ -54,19 +56,31 @@ export function render(route) {
   const related = [...sameCategory, ...others].slice(0, 3);
 
   return `
+    <section class="page-hero page-hero--dish">
+      <div class="container">
+        <a class="back-link back-link--light" href="${ROUTES.menu}">${icon('arrowLeft')} Back to the full menu</a>
+        ${breadcrumb([
+          { label: 'Home', href: ROUTES.home },
+          { label: 'Menu', href: ROUTES.menu },
+          { label: category?.name ?? 'Menu', href: menuHref({ category: dish.category }) },
+          { label: dish.name },
+        ])}
+        <div class="dish-head">
+          <div class="dish-head__copy">
+            <p class="eyebrow eyebrow--light">${escapeHtml(category?.name ?? 'Menu')} · sample dish</p>
+            <h1>${escapeHtml(dish.name)}</h1>
+          </div>
+          <p class="dish-head__meta">
+            ${dietBadge(dish)}
+            <span>${escapeHtml(dish.serves ?? '')}</span>
+            <span>${formatPrice(dish.price)} <em>sample</em></span>
+          </p>
+        </div>
+      </div>
+    </section>
+
     <section class="dish-page">
       <div class="container">
-        <a class="back-link" href="${ROUTES.menu}">${icon('arrowLeft')} Back to the full menu</a>
-        ${breadcrumb(
-          [
-            { label: 'Home', href: ROUTES.home },
-            { label: 'Menu', href: ROUTES.menu },
-            { label: category?.name ?? 'Menu', href: menuHref({ category: dish.category }) },
-            { label: dish.name },
-          ],
-          { dark: true }
-        )}
-
         <div class="dish-layout" data-dish-layout>
           <div class="dish-gallery">
             <figure class="dish-photo">
@@ -76,7 +90,7 @@ export function render(route) {
                 eager: true,
               })}
               <button class="dish-photo__hit" type="button" data-lightbox-dish="${escapeHtml(dish.slug)}" aria-label="Open full-size illustrative photograph of ${escapeHtml(dish.name)}"></button>
-              <span class="dish-photo__badge">Illustrative photo · tap to enlarge</span>
+              <span class="dish-photo__badge">Illustrative · tap to enlarge</span>
               <figcaption class="dish-photo__caption">Not a photograph of the cafe’s dish</figcaption>
             </figure>
 
@@ -97,23 +111,23 @@ export function render(route) {
           <aside class="order-card" aria-label="Order ${escapeHtml(dish.name)}">
             <div class="order-card__top">
               <div>
-                <p class="eyebrow" style="font-size:.58rem">Sample dish · ${escapeHtml(category?.name ?? 'Menu')}</p>
-                <h1>${escapeHtml(dish.name)}</h1>
+                <p class="eyebrow">Your order</p>
+                <h2 class="order-card__title">${escapeHtml(dish.name)}</h2>
               </div>
               <p class="order-card__price">${formatPrice(dish.price)}<small>sample price</small></p>
             </div>
 
             <p class="order-card__desc">${escapeHtml(dish.description)}</p>
-            <p class="dish-card__meta" style="margin-top:10px">${dietBadge(dish)}${(dish.tags ?? []).map((tag) => `<span>${escapeHtml(tag)}</span>`).join('')}</p>
+            <p class="dish-card__meta">${(dish.tags ?? []).map((tag) => `<span>${escapeHtml(tag)}</span>`).join('')}<span>${escapeHtml(category?.name ?? '')}</span></p>
 
             <div data-options>${optionMarkup(dish)}</div>
 
             <div class="qty-row">
               <span class="qty-label" id="qty-label">Quantity</span>
               <div class="qty" role="group" aria-labelledby="qty-label">
-                <button type="button" data-qty-minus aria-label="Decrease quantity">−</button>
+                <button type="button" data-qty-minus aria-label="Decrease quantity">${icon('minus')}</button>
                 <input type="number" inputmode="numeric" min="1" max="${MAX_QTY}" step="1" value="1" data-qty aria-label="Quantity" />
-                <button type="button" data-qty-plus aria-label="Increase quantity">+</button>
+                <button type="button" data-qty-plus aria-label="Increase quantity">${icon('plus')}</button>
               </div>
             </div>
 
@@ -135,8 +149,16 @@ export function render(route) {
         </div>
 
         <section class="related">
-          <h2>More to explore</h2>
-          <div class="dish-grid dish-grid--list" data-related>${related.map((item, index) => dishCard(item, { index, reveal: false })).join('')}</div>
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Keep exploring</p>
+              <h2>More to <em>try.</em></h2>
+            </div>
+            <div class="section-head__aside">
+              <p class="section-head__link"><a class="link-arrow" href="${ROUTES.menu}">All dishes ${icon('arrowRight')}</a></p>
+            </div>
+          </div>
+          <div class="dish-grid dish-grid--list" data-related>${related.map((item, index) => dishCard(item, { index, reveal: false, sizes: RELATED_SIZES })).join('')}</div>
         </section>
       </div>
     </section>
@@ -155,6 +177,7 @@ export function mount(root, route, signal) {
   const orderButton = root.querySelector('[data-order-current]');
   const addButton = root.querySelector('[data-add-current]');
   const feedback = root.querySelector('[data-feedback]');
+  if (!optionsWrap || !qtyInput || !totalEl) return;
 
   // Preselect the first radio choice in each required group.
   (dish.options ?? []).forEach((option) => {
@@ -172,46 +195,48 @@ export function mount(root, route, signal) {
     return result;
   };
   const quantity = () => clampInt(qtyInput.value, 1, MAX_QTY, 1);
-  const currentLine = () => orderItem(dish, { quantity: quantity(), selections: selections(), note: note.value });
+  const currentLine = () => orderItem(dish, { quantity: quantity(), selections: selections(), note: note?.value ?? '' });
 
   const refresh = () => {
     const qty = quantity();
-    minus.disabled = qty <= 1;
-    plus.disabled = qty >= MAX_QTY;
+    if (minus) minus.disabled = qty <= 1;
+    if (plus) plus.disabled = qty >= MAX_QTY;
     totalEl.textContent = formatPrice(unitPrice(dish, selections()) * qty);
-    feedback.textContent = '';
+    if (feedback) feedback.textContent = '';
   };
   const step = (delta) => {
     qtyInput.value = String(clampInt(quantity() + delta, 1, MAX_QTY, 1));
     refresh();
   };
 
-  minus.addEventListener('click', () => step(-1), { signal });
-  plus.addEventListener('click', () => step(1), { signal });
+  minus?.addEventListener('click', () => step(-1), { signal });
+  plus?.addEventListener('click', () => step(1), { signal });
   qtyInput.addEventListener('change', () => {
     qtyInput.value = String(quantity());
     refresh();
   }, { signal });
   optionsWrap.addEventListener('change', refresh, { signal });
-  note.addEventListener('input', refresh, { signal });
+  note?.addEventListener('input', refresh, { signal });
 
-  orderButton.addEventListener('click', () => {
+  orderButton?.addEventListener('click', () => {
     // Merge the selected dish with existing bag lines without double-charging
     // an identical line; every bag item is still included in the message.
     const lines = combineOrderLines([currentLine()], cart.orderLines());
     const result = orderNow(lines);
-    feedback.textContent = result.opened
-      ? 'WhatsApp opened with your order details. The cafe confirms availability, the final price and the order in the chat.'
-      : 'WhatsApp number not configured yet — your order text was copied. Add the cafe number in src/data/site.js to enable ordering.';
+    if (feedback) {
+      feedback.textContent = result.opened
+        ? 'WhatsApp opened with your order details. The cafe confirms availability, the final price and the order in the chat.'
+        : 'WhatsApp number not configured yet — your order text was copied. Add the cafe number in src/data/site.js to enable ordering.';
+    }
     // Keep the exact message available for tests and debugging.
-    root.querySelector('[data-order-current]').dataset.orderMessage = buildOrderMessage(lines);
+    orderButton.dataset.orderMessage = buildOrderMessage(lines);
   }, { signal });
 
-  addButton.addEventListener('click', () => {
+  addButton?.addEventListener('click', () => {
     const line = currentLine();
     cart.add(dish, { quantity: line.quantity, selections: line.selections, note: line.note });
     toast(`${dish.name} added to your order bag.`);
-    feedback.textContent = 'Added to your order bag. The cafe confirms the order in WhatsApp — nothing is confirmed here.';
+    if (feedback) feedback.textContent = 'Added to your order bag. The cafe confirms the order in WhatsApp — nothing is confirmed here.';
   }, { signal });
 
   refresh();

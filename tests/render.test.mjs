@@ -15,7 +15,7 @@ import { galleryPhotos, homeGalleryPhotos } from '../src/data/photography.js';
 const ROOT = process.cwd();
 
 const PAGES = [
-  ['/', 'home', /Good Food/],
+  ['/', 'home', /Good food/],
   ['/menu', 'menu', /Something for/],
   [`/menu/${dishes[0].slug}`, 'dish', new RegExp(dishes[0].name)],
   ['/gallery', 'gallery', /A feast/],
@@ -109,7 +109,7 @@ test('every dish detail route renders its own menu item, price and photograph', 
 
 test('home teaser and gallery page render the correct number of clickable photographs', async () => {
   const home = await createApp('/');
-  assert.equal(home.document.querySelectorAll('[data-categories] .category-card').length, categories.length);
+  assert.equal(home.document.querySelectorAll('[data-categories] [data-cat-tab]').length, categories.length);
   assert.equal(home.document.querySelectorAll('[data-featured] .dish-card').length, 4);
   assert.equal(home.document.querySelectorAll('[data-gallery] .gallery-tile').length, homeGalleryPhotos.length);
   assert.equal(home.document.querySelectorAll('[data-sig-dots] button').length, 3);

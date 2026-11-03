@@ -39,6 +39,14 @@ if (dropdownCategories) {
     .join('');
 }
 
+// The mobile drawer gets the same category shortcuts from the same data file.
+const drawerCategories = document.querySelector('[data-drawer-categories]');
+if (drawerCategories) {
+  drawerCategories.innerHTML = categories
+    .map((category) => `<a href="${categoryHref(category)}">${escapeHtml(category.name)}</a>`)
+    .join('');
+}
+
 initChrome();
 const router = initRouter();
 

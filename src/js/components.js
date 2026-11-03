@@ -1,6 +1,6 @@
 /** Reusable cards and tiles. Every interaction points at a real route/handler. */
 import { formatPrice, dietLabel, categoryById } from '../data/menu.js';
-import { dishHref, categoryHref } from './links.js';
+import { dishHref } from './links.js';
 import { img } from './image.js';
 import { icon } from './icons.js';
 import { escapeHtml } from './utils.js';
@@ -11,9 +11,8 @@ export function dietBadge(dish) {
   </span>`;
 }
 
-export function dishCard(dish, { index = 0, reveal = true } = {}) {
+export function dishCard(dish, { index = 0, reveal = true, sizes = '(max-width: 720px) 82vw, (max-width: 1080px) 46vw, 290px' } = {}) {
   const category = categoryById(dish.category);
-  const sizes = '(max-width: 720px) 80vw, (max-width: 1080px) 45vw, 290px';
   const href = dishHref(dish);
   return `<article class="dish-card${reveal ? ' reveal' : ''}" style="transition-delay:${Math.min(index, 5) * 45}ms">
     <a class="dish-card__media" href="${href}" tabindex="-1" aria-hidden="true">
@@ -28,7 +27,7 @@ export function dishCard(dish, { index = 0, reveal = true } = {}) {
       <p class="dish-card__desc">${escapeHtml(dish.description)}</p>
       <p class="dish-card__meta">${dietBadge(dish)}<span aria-hidden="true">·</span><span>${escapeHtml(category?.name ?? '')}</span></p>
       <div class="dish-card__actions">
-        <a class="btn btn--green" href="${href}">View details</a>
+        <a class="btn btn--green" href="${href}">View dish</a>
         <button class="btn btn--wa" type="button" data-order-card="${escapeHtml(dish.slug)}" aria-label="Order ${escapeHtml(dish.name)} on WhatsApp">
           ${icon('whatsapp')}<span>Order</span>
         </button>
@@ -40,27 +39,16 @@ export function dishCard(dish, { index = 0, reveal = true } = {}) {
   </article>`;
 }
 
-export function categoryCard(category, count) {
-  return `<a class="category-card reveal" href="${categoryHref(category)}">
-    <div class="category-card__media">
-      ${img(category.image, { alt: `Illustrative photograph of ${category.name}`, sizes: '(max-width: 720px) 46vw, (max-width: 1080px) 24vw, 290px' })}
-    </div>
-    <div class="category-card__body">
-      <div>
-        <h3>${escapeHtml(category.name)}</h3>
-        <small>${count} ${count === 1 ? 'dish' : 'dishes'}</small>
-      </div>
-      <span class="category-card__arrow" aria-hidden="true">${icon('chevronRight')}</span>
-    </div>
-  </a>`;
-}
-
 /** Clickable gallery tile; the global lightbox handles the interaction. */
 export function galleryTile(photo, index, group = 'gallery') {
   const span = photo.span === 'wide' ? 'span-wide' : photo.span === 'tall' ? 'span-tall' : '';
+  const sizes =
+    photo.span === 'wide'
+      ? '(max-width: 720px) 100vw, (max-width: 920px) 66vw, 50vw'
+      : '(max-width: 720px) 50vw, (max-width: 920px) 33vw, 25vw';
   return `<figure class="${span} reveal" style="transition-delay:${Math.min(index, 6) * 40}ms">
     <button class="gallery-tile" type="button" data-lightbox-index="${index}" data-lightbox-group="${group}" aria-label="Open full-size photograph: ${escapeHtml(photo.alt)}">
-      ${img(photo.base, { alt: photo.alt, sizes: '(max-width: 720px) 46vw, (max-width: 920px) 32vw, 300px' })}
+      ${img(photo.base, { alt: photo.alt, sizes })}
     </button>
     <figcaption>${escapeHtml(photo.caption)}</figcaption>
   </figure>`;
