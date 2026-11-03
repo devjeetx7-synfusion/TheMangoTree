@@ -145,7 +145,7 @@ Hero, story collage, gallery order/captions and the two lightbox groups (home te
 
 ```
 assets-src/           original photographs (source of truth)
-public/images/        generated 480 / 768 / 1200 px WebP variants + og-cover.jpg
+public/images/        generated 480 / 768 / 1200 px PNG variants + og-cover.png
 src/data/images.json  generated manifest: intrinsic size, variants, average colour
 scripts/optimize-images.mjs
 ```
