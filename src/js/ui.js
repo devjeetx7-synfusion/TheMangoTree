@@ -6,7 +6,7 @@
 import { site, phoneHref, directionsHref, socialLinks, isConfigured } from '../data/site.js';
 import { dishBySlug, formatPrice } from '../data/menu.js';
 import { lightboxGroup } from '../data/photography.js';
-import { img, fullSize, imageInfo, guardImages } from './image.js';
+import { img, fullSize, imageInfo, guardImages, srcset } from './image.js';
 import { ROUTES } from './links.js';
 import { icon, icons } from './icons.js';
 import { escapeHtml, cartLineKey } from './utils.js';
@@ -179,21 +179,33 @@ function buildLightbox() {
   box.setAttribute('role', 'dialog');
   box.setAttribute('aria-modal', 'true');
   box.setAttribute('aria-hidden', 'true');
-  box.setAttribute('aria-label', 'Expanded photograph');
+  box.setAttribute('aria-label', 'Photograph viewer');
   box.innerHTML = `
     <button class="lightbox__close" type="button" data-lightbox-close aria-label="Close photograph">${icons.close}</button>
-    <button class="lightbox__nav lightbox__nav--prev" type="button" data-lightbox-prev aria-label="Previous photograph">${icons.chevronLeft}</button>
     <figure class="lightbox__figure">
-      <img alt="" width="1200" height="800" />
+      <div class="lightbox__image-wrap">
+        <img alt="" width="1200" height="800" />
+      </div>
       <figcaption>
         <span class="lightbox__caption" data-lightbox-caption></span>
-        <span class="lightbox__meta"><span data-lightbox-counter></span> · Illustrative photography, not a photo of the cafe ·
+        <span class="lightbox__meta">
+          <span data-lightbox-counter aria-live="polite"></span> · Illustrative photography, not a photo of the cafe ·
           <a data-lightbox-full target="_blank" rel="noopener noreferrer" href="${fullSize('hero-spread')}">Open full size ${icons.external}</a>
         </span>
       </figcaption>
+      <div class="lightbox__controls">
+        <button class="lightbox__nav lightbox__nav--prev" type="button" data-lightbox-prev aria-label="Previous photograph">${icons.chevronLeft}</button>
+        <button class="lightbox__nav lightbox__nav--next" type="button" data-lightbox-next aria-label="Next photograph">${icons.chevronRight}</button>
+      </div>
     </figure>
-    <button class="lightbox__nav lightbox__nav--next" type="button" data-lightbox-next aria-label="Next photograph">${icons.chevronRight}</button>
   `;
+  const image = box.querySelector('img');
+  const settle = () => box.classList.remove('is-swapping');
+  image.addEventListener('load', settle);
+  image.addEventListener('error', settle);
+  box.addEventListener('click', (event) => {
+    if (event.target === box) closeLightbox();
+  });
   document.body.appendChild(box);
   return box;
 }
@@ -206,6 +218,11 @@ function paintLightbox() {
   if (!photo) return;
   const info = imageInfo(photo.base) ?? { width: 1200, height: 800 };
   const image = box.querySelector('img');
+  box.classList.add('is-swapping');
+  // src stays the full 1200px file (also used by the “open full size” link)
+  // while srcset lets phones download the smaller variant.
+  image.srcset = srcset(photo.base);
+  image.sizes = '(max-width: 920px) 92vw, min(1080px, 78vw)';
   image.src = fullSize(photo.base);
   image.alt = photo.alt;
   image.width = info.width;
@@ -219,6 +236,16 @@ function paintLightbox() {
   box.querySelectorAll('[data-lightbox-prev], [data-lightbox-next]').forEach((button) => {
     button.hidden = !multiple;
   });
+  // Warm the neighbours so stepping through the gallery feels immediate.
+  if (photos.length > 1) {
+    [(index + 1) % photos.length, (index - 1 + photos.length) % photos.length].forEach((next) => {
+      const preload = new Image();
+      preload.src = fullSize(photos[next].base);
+    });
+  }
+  // If the image is already cached no load event may fire after the listeners
+  // were attached; clear the fade on the next frame as a safety net.
+  window.setTimeout(() => box.classList.remove('is-swapping'), 400);
 }
 
 function openLightbox(photos, index, trigger) {
@@ -295,6 +322,14 @@ function initLightbox() {
       event.preventDefault();
       return stepLightbox(1);
     }
+    if (event.key === 'Home') {
+      event.preventDefault();
+      return stepLightbox(-lightboxState.index);
+    }
+    if (event.key === 'End') {
+      event.preventDefault();
+      return stepLightbox(lightboxState.photos.length - 1 - lightboxState.index);
+    }
     if (event.key === 'Tab') {
       // Keep keyboard focus inside the dialog.
       const focusable = Array.from(box.querySelectorAll('button:not([hidden]), a[href]'));
@@ -308,6 +343,27 @@ function initLightbox() {
         event.preventDefault();
         first.focus();
       }
+    }
+  });
+
+  // Touch gestures inside the lightbox: horizontal swipe to step, downward
+  // swipe to dismiss. Mouse drags are ignored so text selection still works.
+  let touch = null;
+  document.addEventListener('pointerdown', (event) => {
+    const box = lightbox();
+    if (!box?.classList.contains('is-open') || event.pointerType === 'mouse') return;
+    if (!event.target.closest('.lightbox__image-wrap, .lightbox__caption')) return;
+    touch = { x: event.clientX, y: event.clientY };
+  });
+  document.addEventListener('pointerup', (event) => {
+    if (!touch) return;
+    const deltaX = event.clientX - touch.x;
+    const deltaY = event.clientY - touch.y;
+    touch = null;
+    if (Math.abs(deltaX) > 44 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      stepLightbox(deltaX < 0 ? 1 : -1);
+    } else if (deltaY > 90 && Math.abs(deltaY) > Math.abs(deltaX)) {
+      closeLightbox();
     }
   });
 }
@@ -344,12 +400,12 @@ function renderCart() {
           <div class="cart-row__media">${img(dish.image, { alt: `Illustrative photograph of ${dish.name}`, sizes: '64px' })}</div>
           <div class="cart-row__body">
             <strong>${escapeHtml(dish.name)}</strong>
-            <small>${escapeHtml(cartLineLabel(item, dish))}</small>
+            ${optionLines(dish, item.selections).length ? `<small>${escapeHtml(cartLineLabel(item, dish))}</small>` : ''}
             ${item.note ? `<small>Note: ${escapeHtml(item.note)}</small>` : ''}
             <div class="cart-row__qty">
-              <button type="button" data-cart-step="-1" data-cart-index="${index}" aria-label="Decrease ${escapeHtml(dish.name)} quantity">−</button>
+              <button type="button" data-cart-step="-1" data-cart-index="${index}" aria-label="Decrease ${escapeHtml(dish.name)} quantity">${icon('minus')}</button>
               <span>${item.quantity}</span>
-              <button type="button" data-cart-step="1" data-cart-index="${index}" aria-label="Increase ${escapeHtml(dish.name)} quantity">+</button>
+              <button type="button" data-cart-step="1" data-cart-index="${index}" aria-label="Increase ${escapeHtml(dish.name)} quantity">${icon('plus')}</button>
             </div>
           </div>
           <div class="cart-row__end">
@@ -366,13 +422,16 @@ function renderCart() {
   clearButton.disabled = !items.length;
 }
 
-function closeCart() {
+function closeCart({ restoreFocus = true } = {}) {
   const panel = cartPanel();
   if (!panel?.classList.contains('is-open')) return;
   panel.classList.remove('is-open');
   panel.setAttribute('aria-hidden', 'true');
-  document.querySelector('[data-cart-toggle]')?.setAttribute('aria-expanded', 'false');
+  panel.inert = true;
+  const toggle = document.querySelector('[data-cart-toggle]');
+  toggle?.setAttribute('aria-expanded', 'false');
   syncBodyLock();
+  if (restoreFocus) toggle?.focus();
 }
 
 function initCart() {
@@ -385,6 +444,7 @@ function initCart() {
     const open = !panel.classList.contains('is-open');
     panel.classList.toggle('is-open', open);
     panel.setAttribute('aria-hidden', String(!open));
+    panel.inert = !open;
     toggle.setAttribute('aria-expanded', String(open));
     closeNav();
     closeDropdown();
@@ -419,6 +479,12 @@ function initCart() {
       panel.querySelector('[data-cart-feedback]').textContent =
         'WhatsApp opened with every item in your bag. The cafe confirms availability, price and the order in the chat.';
     }
+  });
+  window.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    if (!panel.classList.contains('is-open')) return;
+    event.preventDefault();
+    closeCart();
   });
   cart.subscribe(renderCart);
   renderCart();
@@ -511,7 +577,7 @@ function reveal(root) {
 export function closeOverlays() {
   closeNav();
   closeDropdown();
-  closeCart();
+  closeCart({ restoreFocus: false });
   closeLightbox();
 }
 

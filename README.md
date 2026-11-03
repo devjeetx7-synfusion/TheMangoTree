@@ -13,7 +13,7 @@ The site is a single-page app with a History API router (`src/js/router.js`). Al
 
 | Route | Page | Highlights |
 | --- | --- | --- |
-| `/` | Home | Hero, category grid, featured dishes, signature carousel, story teaser, gallery teaser, sample reviews, visit CTA |
+| `/` | Home | Cinematic photo hero, featured dishes, interactive category explorer, signature dish carousel, story teaser, gallery teaser, ambience quote, visit panel |
 | `/menu` | Complete food menu | Category filters, live search, deep links (`/menu?category=pizza&q=…`), dish cards, order bag |
 | `/menu/[slug]` | Dish detail | Photograph + lightbox, sample ingredients/allergens, options, quantity, live sample subtotal, WhatsApp order, related dishes |
 | `/gallery` | Photo gallery | Full illustrative photo set, lightbox with prev/next/close, keyboard controls, full-size image link |
@@ -23,6 +23,30 @@ The site is a single-page app with a History API router (`src/js/router.js`). Al
 | anything else | Custom 404 | Includes invalid `/menu/[slug]` URLs; `noindex` + working links home/menu/gallery/contact |
 
 Legacy bookmarks (`/index.html`, `/menu.html?…`, `/dish.html?id=…`) redirect to the canonical clean route. A Vite dev/preview middleware in `vite.config.mjs` serves the SPA shell for the old `.html` paths so no static `menu.html` can shadow the `/menu` route. On production hosts, the SPA fallback does the same.
+
+---
+
+## Design system
+
+One stylesheet (`src/styles/main.css`) drives every page: custom properties for
+colour, type, spacing, radii, shadows and easing, then a small set of reusable
+component classes that the page views compose. Nothing is styled ad-hoc in JS.
+
+| Token group | Values |
+| --- | --- |
+| Colour | forest green `#173D2D` (with `#0E2A1F` deep / `#081C14` ink / `#23513B` soft), mango `#F4B942` (light `#FFD785`, `#8A5A14` amber for text), warm cream `#FFF8EB` (`#F9F0DD`, `#F0E2C8`), ink `#221A13`, muted `#6B5C4D`, WhatsApp `#17864A`, hairline borders, three shadow steps |
+| Type | Fraunces (serif display, 100–900 + italic) for headings, numbers and pull quotes; DM Sans (sans body) for prose, labels and UI. Fluid `clamp()` scale, `text-wrap: balance` on headings, `pretty` on paragraphs |
+| Space & shape | `--gutter` 20 → 40 px, `--section-y` fluid section rhythm, `--container` 1240 px, 8–20 px radii (no pill-shaped cards), 1 px hairline borders |
+| Motion | three keyframe sets (`heroRise`, `drawerIn`, `fadeIn`), 180–320 ms transitions on hover/focus, one shared `--ease` curve, `.reveal` scroll-in that is fail-open, full `prefers-reduced-motion` override |
+
+Reusable components: `.btn` (`--mango`, `--green`, `--wa`, `--ghost`,
+`--outline-light`, `--ghost-dark`, `--sm`, `--lg`, `--block`),
+`.link-arrow`, `.eyebrow`, `.lead`, `.fine-print`, `.icon-btn`, `.chip`,
+`.cat-tab`, `.dish-card`, `.gallery-tile`, `.signature`, `.order-card`,
+`.option`, `.qty`, `.cart-row`, `.visit-panel`, `.principle`, `.toast`,
+`.lightbox` and the header/drawer/footer chrome. Interactive states are styled
+once (`:hover` behind `@media (hover: hover)`, `:focus-visible` with a green ring
+on cream and a mango ring on the dark bands).
 
 ---
 
@@ -151,7 +175,8 @@ Gallery tiles and the dish hero are real `<button>` elements wired to a lightbox
 
 * Desktop nav with a click/keyboard-driven **Menu → categories** dropdown; mobile hamburger drawer closes on navigation, Escape and resize; header/footer links are `data-nav` marked with `aria-current`.
 * Shared header/footer/mobile bar on every route; logo always returns to `/`.
-* ≥44 px touch targets, scrollable drawer that starts below the header, `min-width: 0` grids, `overflow-x: clip`, and breakpoints at 1080 / 920 / 720 / 420 / 340 px (covering 320, 360, 390, 430, 768, 1024 and 1440 px).
+* ≥44 px touch targets (invisible padding on dense text links so the layout still reads tight), scrollable drawer that starts below the header, `min-width: 0` grids, `overflow-x: clip`, and max-width refinements at 1080 / 920 / 820 / 768 / 720 / 560 / 430 / 420 / 375 / 340 px plus a 600–920 px tablet pass (covers 320, 360, 375, 390, 414, 430, 768, 1024 and 1440 px).
+* Reduced-motion, `inert`-based cart drawer, focus returned to the trigger on close, focus trapped in the lightbox, and `Home` / `End` / swipe support in the lightbox.
 * Semantic landmarks, skip link, labelled controls, `aria-live` status messages, visible focus rings, reduced-motion support and lightbox focus trapping.
 
 ---
@@ -179,9 +204,9 @@ npm run build && npm run preview
 AWS_EXECUTION_ENV=AWS_Lambda_nodejs22.x npm run test:browser
 ```
 
-`scripts/browser-audit.mjs` loads **every route at 320 / 360 / 390 / 430 / 768 / 1024 / 1440 px** in headless Chromium and checks HTTP status, `h1`, empty links, unresolved internal links, real pixel data for every `<img>`, console/page errors, horizontal scrolling, the lightbox, menu filters, mobile navigation, WhatsApp deep links and the 404 page. It also writes screenshots to `.arena/shots` (excluded from Git). Point it at any server with `AUDIT_URL`, e.g. `AUDIT_URL=http://localhost:8080 npm run test:browser` to verify the raw-source server.
+`scripts/browser-audit.mjs` loads **every route at 320 / 360 / 375 / 390 / 414 / 430 / 768 / 1024 / 1440 px** in headless Chromium and checks HTTP status, `h1`, empty links, unresolved internal links, real pixel data for every `<img>`, console/page errors, horizontal scrolling, the lightbox, menu filters, mobile navigation, WhatsApp deep links and the 404 page. It also writes screenshots to `.arena/shots` (excluded from Git). Point it at any server with `AUDIT_URL`, e.g. `AUDIT_URL=http://localhost:8080 npm run test:browser` to verify the raw-source server.
 
-The last runs: **93 page loads, 7 viewports, 3,843 internal links, 504 images, 9 interaction checks — 0 problems** on the production preview, and the same audit on the `:8080` raw-source server after the fix. This audit caught and fixed a real `/menu` redirect loop, a mobile horizontal-overflow bug and the empty-homepage module-graph failure that jsdom could not see.
+The last run: **117 page loads, 9 viewports, 5,580 internal links, 585 images, 9 interaction checks — 0 problems** on the production preview (`npm run build && npm run preview`). This audit caught and fixed a real `/menu` redirect loop, a mobile horizontal-overflow bug, an empty-homepage module-graph failure that jsdom could not see, a desktop dropdown that never opened, and a fixed bottom bar that could swallow taps on the last card row.
 
 ---
 
@@ -200,8 +225,7 @@ Deploy at a domain root (`base: '/'`). For a sub-folder deployment, change `base
 ## Repository notes
 
 * The old three-page build (`menu.html`, `dish.html`, `theme.xml` — a legacy Blogger theme with hotlinked images and hash-only links) was removed so no stale or dead links remain in the codebase.
-* Sample reviews are labelled placeholder copy, not real customer feedback.
-* No analytics, tracking or third-party scripts are included. Fonts are loaded from Google Fonts with system fallbacks.
+* No analytics, tracking or third-party scripts are included. Fonts are **self-hosted** in `public/fonts/` (Fraunces variable normal + italic, DM Sans variable, plus tiny `₹` subsets), so the site renders with no third-party requests and no blocking font CDN; system serif/sans fallbacks are declared in the stacks.
 
 ## Known limitations
 

@@ -13,7 +13,7 @@ import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
 const BASE = process.env.AUDIT_URL || 'http://localhost:4173';
-const WIDTHS = [320, 360, 390, 430, 768, 1024, 1440];
+const WIDTHS = [320, 360, 375, 390, 414, 430, 768, 1024, 1440];
 const ROUTES = [
   '/',
   '/menu',
@@ -210,6 +210,16 @@ try {
         return original.call(this);
       };
       window.TMT.site.whatsapp = '919876543210';
+    });
+    // On phones the fixed bottom action bar overlays the lower ~70 px of the
+    // viewport. A raw click on an element that happens to sit there would land
+    // on the bar instead, so move the target into the middle of the screen
+    // first (scrollIntoView is a no-op when the element is already "in view"
+    // but overlapped), exactly like a person would, then use a real click.
+    await page.evaluate(() => {
+      const el = document.querySelector('[data-order-card="margherita-pizza"]');
+      const rect = el.getBoundingClientRect();
+      window.scrollBy({ top: rect.top - window.innerHeight / 2, behavior: 'instant' });
     });
     await page.click('[data-order-card="margherita-pizza"]');
     const order = await page.evaluate(() => ({
