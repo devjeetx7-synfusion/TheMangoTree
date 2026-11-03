@@ -36,8 +36,8 @@ test('links.js and image.js load with plain native ESM (no Vite transform)', asy
   assert.equal(links.dishHref('margherita-pizza'), '/menu/margherita-pizza');
 
   const image = await import('../src/js/image.js');
-  assert.match(image.srcset('pizza-margherita'), /\/images\/pizza-margherita-480\.webp 480w/);
-  assert.match(image.fullSize('pizza-margherita'), /\/images\/pizza-margherita-1200\.webp$/);
+  assert.match(image.srcset('pizza-margherita'), /\/images\/pizza-margherita-480\.png 480w/);
+  assert.match(image.fullSize('pizza-margherita'), /\/images\/pizza-margherita-1200\.png$/);
   assert.match(image.img('pizza-margherita', { alt: 'Pizza' }), /srcset="[^"]+"/);
 });
 

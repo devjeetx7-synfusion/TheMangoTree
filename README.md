@@ -1,6 +1,6 @@
 # The Mango Tree Cafe — website
 
-A mobile-first, clean-route cafe website for **The Mango Tree Cafe**, Chhapra, Bihar — built with Vite, vanilla JavaScript and a locally hosted, responsive WebP image set.
+A mobile-first, clean-route cafe website for **The Mango Tree Cafe**, Chhapra, Bihar — built with Vite, vanilla JavaScript and a locally hosted, responsive PNG image set.
 
 > **Illustrative imagery & sample menu**
 > Every photograph is illustrative food/ambience photography, **not** a photograph of the real cafe. Dish names, descriptions, ingredients, allergens and prices are editable **sample data**. Disclosures are shown on the gallery, dish, contact, legal and footer pages — please keep them until real content is supplied. Nothing on this site claims an order has been placed or confirmed.
@@ -61,7 +61,7 @@ npm run serve        # dependency-free static server for raw source at :8080
 npm test             # route/link/image, interaction, WhatsApp, responsive and build tests
 npm run verify       # image + menu-data integrity check
 npm run check        # test + verify + build
-npm run images       # rebuild responsive WebP assets from /assets-src
+npm run images       # rebuild responsive PNG assets from /assets-src
 npm run test:browser # optional real-Chromium audit (see Testing)
 ```
 
@@ -145,12 +145,12 @@ Hero, story collage, gallery order/captions and the two lightbox groups (home te
 
 ```
 assets-src/           original photographs (source of truth)
-public/images/        generated 480 / 768 / 1200 px WebP variants + og-cover.jpg
+public/images/        generated 480 / 768 / 1200 px PNG variants + og-cover.png
 src/data/images.json  generated manifest: intrinsic size, variants, average colour
 scripts/optimize-images.mjs
 ```
 
-`npm run images` generates the responsive WebP set and manifest. The UI uses the manifest to set `width`/`height`, paint an average-colour placeholder, and build `srcset`/`sizes` so images are never stretched (`object-fit: cover`) and phones download the right variant. A capture-phase error handler swaps any failed photograph for a branded SVG fallback.
+`npm run images` generates the responsive PNG set and manifest. The UI uses the manifest to set `width`/`height`, paint an average-colour placeholder, and build `srcset`/`sizes` so images are never stretched (`object-fit: cover`) and phones download the right variant. A capture-phase error handler swaps any failed photograph for a branded SVG fallback.
 
 Gallery tiles and the dish hero are real `<button>` elements wired to a lightbox (`src/js/ui.js`) that supports next / previous / close, Escape, ← / →, a full-size image link and focus management. Decorative story/hero images are deliberately **not** interactive.
 

@@ -5,7 +5,7 @@
  *     content written for the design preview. Nothing here has been supplied or
  *     confirmed by the cafe. Edit freely — the whole site reads from this file.
  *
- * `image` points to a base filename in /public/images (responsive WebP variants
+ * `image` points to a base filename in /public/images (responsive PNG variants
  * are generated from /assets-src by `npm run images`). Every dish must have its
  * own photograph — `npm run verify` fails if a photo is missing or reused.
  *

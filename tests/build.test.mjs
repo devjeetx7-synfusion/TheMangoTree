@@ -12,7 +12,7 @@ test('npm run build succeeds and emits working production assets', () => {
   assert.equal(result.status, 0, `build failed:\n${result.stdout}\n${result.stderr}`);
 
   const dist = path.join(ROOT, 'dist');
-  for (const file of ['index.html', '404.html', '_redirects', 'favicon.svg', 'robots.txt', 'images/og-cover.jpg']) {
+  for (const file of ['index.html', '404.html', '_redirects', 'favicon.svg', 'robots.txt', 'images/og-cover.png']) {
     assert.ok(existsSync(path.join(dist, file)), `dist/${file} missing`);
   }
   // A static menu.html/dish.html would be served for the clean /menu route by
