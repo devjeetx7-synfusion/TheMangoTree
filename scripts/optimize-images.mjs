@@ -1,7 +1,7 @@
 /**
  * Build the web image set from the source photography in /assets-src.
  *
- *  - Writes responsive WebP variants (480 / 768 / 1200 px wide, never upscaled)
+ *  - Writes responsive PNG variants (480 / 768 / 1200 px wide, never upscaled)
  *  - Records intrinsic dimensions + average colour in src/data/images.json (and
  *    its browser-importable twin src/data/images.js) so the UI can reserve
  *    space (no layout shift) and paint a matching placeholder
@@ -52,11 +52,11 @@ async function main() {
 
     for (const width of WIDTHS) {
       if (meta.width && width > meta.width + 8) continue;
-      const outFile = path.join(OUT_DIR, `${base}-${width}.webp`);
+      const outFile = path.join(OUT_DIR, `${base}-${width}.png`);
       await sharp(input)
         .rotate()
         .resize({ width, withoutEnlargement: true })
-        .webp({ quality: 76, effort: 5, smartSubsample: true })
+        .png({ compressionLevel: 9, adaptiveFiltering: true })
         .toFile(outFile);
       const info = await stat(outFile);
       written += 1;
@@ -86,20 +86,20 @@ async function main() {
     `/**\n * Responsive image manifest — JavaScript module form.\n *\n * Generated from src/data/images.json by \`npm run images\`. A JS module is used\n * (instead of importing the .json file directly) because browsers enforce strict\n * MIME checking on ES modules: a .json response aborts the whole module graph.\n * Keep this file in sync by running \`npm run images\`; scripts/verify-assets.mjs\n * checks it on every build.\n */\nexport default ${serialised};\n`
   );
 
-  // Social share cover (JPEG: universally supported by link previews).
+  // Social share cover (PNG).
   const heroSource = path.join(SRC_DIR, 'hero-spread.jpg');
   try {
     await sharp(heroSource)
       .resize(1200, 630, { fit: 'cover', position: 'right' })
-      .jpeg({ quality: 82, mozjpeg: true })
-      .toFile(path.join(OUT_DIR, 'og-cover.jpg'));
-    console.log('✓ og-cover.jpg (1200×630)');
+      .png({ compressionLevel: 9 })
+      .toFile(path.join(OUT_DIR, 'og-cover.png'));
+    console.log('✓ og-cover.png (1200×630)');
   } catch {
     console.warn('! hero-spread.jpg missing — skipped OG cover.');
   }
 
   console.log(
-    `\n${Object.keys(manifest).length} images · ${written} WebP files · ${(bytes / 1024 / 1024).toFixed(2)} MB`
+    `\n${Object.keys(manifest).length} images · ${written} PNG files · ${(bytes / 1024 / 1024).toFixed(2)} MB`
   );
 }
 

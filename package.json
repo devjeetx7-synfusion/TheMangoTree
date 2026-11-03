@@ -5,15 +5,15 @@
   "description": "The Mango Tree Cafe — a routed, mobile-first cafe website with a central sample menu, gallery lightbox and WhatsApp ordering, built with Vite.",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "serve": "node scripts/serve.mjs",
-    "build": "node scripts/verify-assets.mjs && vite build && node scripts/postbuild.mjs",
+    "dev": "node scripts/optimize-images.mjs && vite --host 0.0.0.0",
+    "serve": "node scripts/optimize-images.mjs && node scripts/serve.mjs",
+    "build": "node scripts/optimize-images.mjs && node scripts/verify-assets.mjs && vite build && node scripts/postbuild.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "images": "node scripts/optimize-images.mjs",
     "verify": "node scripts/verify-assets.mjs",
     "test": "node --test",
     "test:browser": "node scripts/browser-audit.mjs",
-    "check": "npm test && npm run verify && npm run build"
+    "check": "npm test && npm run images && npm run verify && npm run build"
   },
   "devDependencies": {
     "esbuild": "^0.28.0",
